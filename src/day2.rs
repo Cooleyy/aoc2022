@@ -10,7 +10,7 @@ const YOUR_SHAPES: Shapes = Shapes {
     scissors: 'Z',
 };
 
-const THEIR_SHAPES: Shapes = Shapes {
+const _THEIR_SHAPES: Shapes = Shapes {
     rock: 'A',
     paper: 'B',
     scissors: 'C',
