@@ -21,11 +21,11 @@ struct Directory<'a> {
     name: String,
     files: Vec<File<'a>>,
     directories: HashMap<&'a str, Directory<'a>>,
-    parent: Option<*const Directory<'a>>
+    parent: Option<&'a Directory<'a>>
 }
 
 impl Directory<'_> {
-    fn new(name: &str, parent: Option<*const Directory>) -> Self {
+    fn new(name: &str, parent: Option<&Directory>) -> Self {
         Self {
             name: String::from(name),
             files: Vec::new(),
@@ -37,7 +37,7 @@ impl Directory<'_> {
 
 fn move_directory<'a>(current_dir: &'a mut Directory<'a>, new_dir_name: &'a str) -> &'a mut Directory<'a> {
     if new_dir_name == ".." {
-        unsafe{&mut *current_dir.parent.unwrap()}
+        &mut current_dir.parent.unwrap()
     }
     else {
         &mut current_dir.directories[new_dir_name]
@@ -46,15 +46,12 @@ fn move_directory<'a>(current_dir: &'a mut Directory<'a>, new_dir_name: &'a str)
 
 fn part_one(input: &str) {
     let mut top_level_dir = Directory::new("/", None);
-    let mut current_dir = &mut top_level_dir;
+    let mut current_dir = &top_level_dir;
     for io in input.lines() {
         match io[..4].as_ref() {
             "$ cd" => current_dir = move_directory(current_dir, &io[5..]),
             "$ ls" => (),
-            "dir " => match current_dir.directories.insert(&io[4..], Directory::new(&io[4..], Some(&mut *current_dir))) {
-                    Some(_) => (),
-                    None =>  ()
-                },
+            "dir " => drop(current_dir.directories.insert(&io[4..], Directory::new(&io[4..], Some(&current_dir)))),
             _ => current_dir.files.push(File::new(&io)),
         }
     }
