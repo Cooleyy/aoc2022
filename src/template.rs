@@ -8,6 +8,6 @@ pub fn day() {
     let _example  = include_str!("../files/day1_example.txt");
     let input = include_str!("../files/day1.txt");
 
-    part_one(input.clone());
-    part_two(input);
+    part_one(&input);
+    part_two(&input);
 }
